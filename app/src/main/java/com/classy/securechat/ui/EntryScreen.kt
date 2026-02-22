@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.classy.securechat.data.AuthRepository
 import com.classy.securechat.data.UserSharedPreferences
 import com.classy.securechat.ui.theme.*
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun EntryScreen(onLoginClick: () -> Unit, onCreateAccountClick: () -> Unit) {
@@ -116,10 +117,29 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
                     isLoading = true
                     AuthRepository.signIn(email, password,
                         onSuccess = {
-                            isLoading = false
-                            // שומרים את המייל כשם משתמש מקומי בינתיים
-                            UserSharedPreferences.saveUser(context, email.substringBefore("@"))
-                            onLoginSuccess()
+
+                            val uid = AuthRepository.getUserId()
+                            if (uid != null) {
+                                FirebaseFirestore.getInstance().collection("users").document(uid).get()
+                                    .addOnSuccessListener { document ->
+
+                                        val realName = document.getString("displayName") ?: email.substringBefore("@")
+
+
+                                        UserSharedPreferences.saveUser(context, realName)
+
+                                        isLoading = false
+                                        onLoginSuccess()
+                                    }
+                                    .addOnFailureListener {
+
+                                        UserSharedPreferences.saveUser(context, email.substringBefore("@"))
+                                        isLoading = false
+                                        onLoginSuccess()
+                                    }
+                            } else {
+                                isLoading = false
+                            }
                         },
                         onError = { error ->
                             isLoading = false
@@ -195,7 +215,6 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit, onNavigateToLogin: () -> Unit)
                 text = "Create Account",
                 onClick = {
                     isLoading = true
-                    // כאן היה חסר ה-name! הוספתי אותו:
                     AuthRepository.signUp(email, password, name,
                         onSuccess = {
                             isLoading = false

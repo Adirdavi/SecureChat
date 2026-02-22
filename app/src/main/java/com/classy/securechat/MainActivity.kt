@@ -61,13 +61,13 @@ class MainActivity : ComponentActivity() {
                             navController.navigate("chat/$name")
                         },
                         onLogout = {
-                            // 1. התנתקות מפיירבייס
+
                             com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
 
-                            // 2. ניקוי הזיכרון המקומי
+
                             UserSharedPreferences.logout(this@MainActivity)
 
-                            // 3. חזרה למסך הפתיחה ומחיקת ההיסטוריה
+
                             navController.navigate("entry") {
                                 popUpTo(0) { inclusive = true }
                             }

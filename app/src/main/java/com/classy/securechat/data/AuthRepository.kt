@@ -8,29 +8,28 @@ object AuthRepository {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    // הרשמה + שמירת משתמש בדאטה בייס
     fun signUp(email: String, pass: String, name: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         if (email.isBlank() || pass.isBlank()) {
             onError("Email and Password are required")
             return
         }
 
-        // 1. יצירת משתמש באותנטיקציה
         auth.createUserWithEmailAndPassword(email, pass)
             .addOnSuccessListener { result ->
                 val uid = result.user?.uid ?: ""
 
-                // 2. יצירת אובייקט משתמש
+                val myPublicKey = RSAKeyManager.generateKeyPair() ?: ""
+
                 val newUser = User(
                     userId = uid,
                     displayName = name,
-                    email = email
+                    email = email,
+                    publicKey = myPublicKey
                 )
 
-                // 3. שמירה ב-Firestore באוסף "users"
                 db.collection("users").document(uid).set(newUser)
                     .addOnSuccessListener { onSuccess() }
-                    .addOnFailureListener { onSuccess() } // גם אם השמירה נכשלה, המשתמש נוצר
+                    .addOnFailureListener { onError("Failed to save user") }
             }
             .addOnFailureListener { onError(it.message ?: "Sign up failed") }
     }
@@ -41,7 +40,14 @@ object AuthRepository {
             return
         }
         auth.signInWithEmailAndPassword(email, pass)
-            .addOnSuccessListener { onSuccess() }
+            .addOnSuccessListener {
+                val uid = auth.currentUser?.uid
+                if(uid != null) {
+                    val newPublicKey = RSAKeyManager.generateKeyPair() ?: ""
+                    db.collection("users").document(uid).update("publicKey", newPublicKey)
+                }
+                onSuccess()
+            }
             .addOnFailureListener { onError(it.message ?: "Login failed") }
     }
 
