@@ -42,4 +42,5 @@ SecureChat does not rely on hardcoded secrets. It uses a robust Public Key Infra
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/YourUsername/SecureChat.git](https://github.com/YourUsername/SecureChat.git)
+   git clone (https://github.com/Adirdavi/SecureChat)
+   gi
