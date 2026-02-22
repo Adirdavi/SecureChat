@@ -43,4 +43,3 @@ SecureChat does not rely on hardcoded secrets. It uses a robust Public Key Infra
 1. Clone the repository:
    ```bash
    git clone (https://github.com/Adirdavi/SecureChat)
-   gi
