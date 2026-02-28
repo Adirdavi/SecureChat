@@ -27,11 +27,8 @@ SecureChat does not rely on hardcoded secrets. It uses a robust Public Key Infra
 3. **Sending a Message:** When Alice sends a message to Bob, the app fetches Bob's Public Key and encrypts the message. The app also creates a secondary copy of the message encrypted with Alice's own Public Key (so she can read her own sent messages).
 4. **Receiving a Message:** Only Bob's device, using his locally stored Private Key, can decrypt the incoming message. Not even the database administrator can read the contents.
 
-## 📸 Screenshots
-*(Add screenshots of your app here)*
-| Login Screen | Chat List | Secure Chat | Secret Mode |
-| :---: | :---: | :---: | :---: |
-| <img src="link_to_image" width="200"/> | <img src="link_to_image" width="200"/> | <img src="link_to_image" width="200"/> | <img src="link_to_image" width="200"/> |
+## 📸 Video
+https://github.com/user-attachments/assets/6e57acd5-7651-4e7e-bfc9-27a59b3506de
 
 ## 🚀 Getting Started
 
